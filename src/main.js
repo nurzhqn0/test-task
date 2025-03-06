@@ -5,16 +5,20 @@
  */
 
 // Plugins
-import { registerPlugins } from './plugins'
+import { registerPlugins } from "./plugins";
 
 // Components
-import App from './App.vue'
+import App from "./App.vue";
 
 // Composables
-import { createApp } from 'vue'
+import { createApp } from "vue";
+import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 
-const app = createApp(App)
+// Register all Community features
+ModuleRegistry.registerModules([AllCommunityModule]);
 
-registerPlugins(app)
+const app = createApp(App);
 
-app.mount('#app')
+registerPlugins(app);
+
+app.mount("#app");

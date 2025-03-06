@@ -4,8 +4,6 @@
 
 		<v-btn :to="'/'" text="Home" slim class="ms-3" />
 
-		<!-- отобразить ссылки на избранное и корзину -->
-
 		<v-btn to="favorites" text="Favorites" slim class="ms-3" />
 
 		<v-btn to="cart" text="Cart" slim class="ms-3" />
