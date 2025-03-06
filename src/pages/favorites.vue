@@ -1,26 +1,23 @@
 <script setup>
 import useProducts from "@/composables/useProducts";
-import { useCartStore } from "@/stores/cart";
 import { useFavoritesStore } from "@/stores/favorites";
 import { onMounted, ref, computed } from "vue";
 
-const { flags, products, getAllProducts, categories } = useProducts();
-
 const favoritesStore = useFavoritesStore();
-const cartStore = useCartStore();
 
 const selectedCategory = ref(null);
 
 const filteredProducts = computed(() => {
-	if (!products.value) return [];
-	if (!selectedCategory.value) return products.value;
-	return products.value.filter(
+	if (!selectedCategory.value) {
+		return favoritesStore.favorites;
+	}
+	return favoritesStore.favorites.filter(
 		(product) => product.category === selectedCategory.value
 	);
 });
 
 onMounted(() => {
-	getAllProducts();
+	favoritesStore.updateFavoriteCategories();
 });
 </script>
 
@@ -34,7 +31,7 @@ onMounted(() => {
 					<v-card-text>
 						<v-select
 							v-model="selectedCategory"
-							:items="categories"
+							:items="favoritesStore.categories"
 							label="Категории"
 							clearable
 						></v-select>
@@ -43,9 +40,9 @@ onMounted(() => {
 			</v-col>
 
 			<!-- products -->
-			<v-col v-if="!flags.isLoading" md="9">
-				<h1 class="mb-4 text-h3">Все товары</h1>
-				<v-row v-if="products.length">
+			<v-col md="9">
+				<h1 class="mb-4 text-h3">Избранное</h1>
+				<v-row v-if="favoritesStore.favorites.length">
 					<v-col v-for="product in filteredProducts" :key="product.id" md="4">
 						<v-card>
 							<v-img :src="product.image" height="200px"></v-img>
@@ -54,19 +51,10 @@ onMounted(() => {
 
 							<v-card-actions class="d-flex flex-column text-sm justify-center">
 								<v-btn
-									color="primary"
-									@click="favoritesStore.addFavorite(product)"
-									class="mb-2"
+									color="error"
+									@click="favoritesStore.removeFavorite(product)"
 								>
-									Добавить в избранное
-								</v-btn>
-
-								<v-btn
-									color="primary"
-									@click="cartStore.add(product)"
-									class="mb-2"
-								>
-									Добавить в корзину
+									Удалить
 								</v-btn>
 							</v-card-actions>
 						</v-card>
@@ -75,13 +63,9 @@ onMounted(() => {
 
 				<v-row v-else>
 					<v-col>
-						<v-alert type="info">Товары не найдены</v-alert>
+						<v-alert type="info">Нет избранных товаров</v-alert>
 					</v-col>
 				</v-row>
-			</v-col>
-
-			<v-col v-else class="d-flex justify-center align-center" md="9">
-				<v-progress-circular indeterminate size="64"></v-progress-circular>
 			</v-col>
 		</v-row>
 	</v-container>
